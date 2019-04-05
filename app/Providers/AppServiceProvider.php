@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(UrlGenerator $url)
     {
        View::composer('frontEnd.includes.menu',function ($view){
            $publishedCategories = Category::with(['subcategories'])
@@ -29,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
             // $publishedSubCategories = Subcategory::where('publicationStatus', 1)->get();
             // $view->with('publishedSubCategories',$publishedSubCategories);
         });
+        if(env('REDIRECT_HTTPS')) {
+            $url->formatScheme('https');
+        }
     }
 
     /**
@@ -38,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        if(env('REDIRECT_HTTPS')) {
+            $this->app['request']->server->set('HTTPS', true);
+        }
     }
 }
